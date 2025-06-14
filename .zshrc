@@ -223,6 +223,32 @@ format() {
   prettier --write "$file"
 }
 
+link() {
+  if [[ -z "$1" ]]; then
+    echo "Usage: gitlink <github-https-url>"
+    return 1
+  fi
+
+  local url="$1"
+
+  # Validate GitHub HTTPS URL
+  if [[ ! "$url" =~ ^https://github\.com/ ]]; then
+    echo "Error: Please provide a valid GitHub HTTPS URL"
+    return 1
+  fi
+
+  # Transform to SSH format
+  local repo_path="${url#https://github.com/}"
+  repo_path="${repo_path%.git}"
+  local ssh_url="git@github.com:${repo_path}.git"
+
+  echo "Adding remote origin: $ssh_url"
+  git remote add origin "$ssh_url"
+
+  push main
+}
+
+
 export PATH="$PATH:$HOME/.dotnet/tools"
 
 . "$HOME/.local/bin/env"
