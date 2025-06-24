@@ -9,15 +9,17 @@
 alias ls='ls --color=auto'
 alias grep='grep --color=auto'
 PS1='[%n@%m %1~]$ '
-alias vmi="nvim"
 alias vim="nvim"
+alias vmi="nvim"
 alias ivm="nvim"
+alias imv="nvim"
+alias miv="nvim"
+alias mvi="nvim"
 alias vba="source venv/bin/activate"
 alias dnb="dotnet build"
 alias ecp="mv /home/ivan/.config/nvim/unused_plugins/copilot.lua /home/ivan/.config/nvim/lua/plugins"
 alias dcp="mv /home/ivan/.config/nvim/lua/plugins/copilot.lua /home/ivan/.config/nvim/unused_plugins"
 alias reset_efcore_database="dotnet ef database drop && dotnet ef database update"
-alias dnf="dotnet format"
 alias ssh-raspberrypi-home="ssh ivan@192.168.50.151"
 alias ssh-raspberrypi-hotspot="ssh ivan@172.20.10.2"
 
@@ -111,6 +113,7 @@ initiate() {
 
   cd "$BACKEND" || return
   pnpm install
+  pnpx prisma db push
   pnpm db:gen
   pnpx prisma studio &
   pnpm dev &         
@@ -247,6 +250,32 @@ link() {
 
   push main
 }
+
+dnf() {
+  if [[ -z "$1" ]]; then
+    # No argument, use current directory
+    if ! ls *.csproj >/dev/null 2>&1; then
+      echo "No .csproj file found in current directory."
+      echo "Usage: dbr <project-folder>"
+      return 1
+    fi
+
+    dotnet format
+  else
+    local current_directory=$(pwd)
+    if ! ls "$1"/*.csproj >/dev/null 2>&1; then
+      echo "No .csproj file found in '$1'."
+      return 1
+    fi
+
+    cd $1
+    dotnet format
+    cd $current_directory
+  fi
+
+  echo "Formatted files succellfully"
+}
+
 
 
 export PATH="$PATH:$HOME/.dotnet/tools"
