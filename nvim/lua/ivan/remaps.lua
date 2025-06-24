@@ -54,7 +54,7 @@ vim.keymap.set({ "n", "v" }, "<leader>pb", function()
   end
 
   -- push directly, no shell functions needed
-  vim.fn.jobstart({ "git", "push", "-u", "origin", branch }, {
+  vim.fn.jobstart({ "git", "push", "origin", branch }, {
     detach = true,
     on_exit = function(_, code)
       -- schedule so we don’t call notify from the job thread
