@@ -22,6 +22,7 @@ alias dcp="mv /home/ivan/dotfiles/nvim/lua/plugins/copilot.lua /home/ivan/dotfil
 alias reset_efcore_database="dotnet ef database drop && dotnet ef database update"
 alias ssh-raspberrypi-home="ssh ivan@192.168.50.151"
 alias ssh-raspberrypi-hotspot="ssh ivan@172.20.10.2"
+alias enter-postgres="sudo -i -u postgres"
 
 export dsa_assignment="$HOME/programming/nyp/y2s1/data_structures_and_algorithms/assignment_1/"
 export dotfiles="$HOME/dotfiles/"
