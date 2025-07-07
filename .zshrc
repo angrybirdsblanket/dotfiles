@@ -98,24 +98,6 @@ pull() {
   git pull origin "$1"
 }
 
-initiate() {
-  local BASE="$HOME/programming/nyp/y2s1/full_stack_dev/project"
-  local BACKEND="$BASE/initiate-backend"
-  local PLATFORM="$BASE/initiate-platform"
-
-  cd "$BACKEND" || return
-  pnpm install
-  pnpx prisma db push
-  pnpm db:gen
-  pnpx prisma studio &
-  pnpm cf:dev &         
-  sleep 2           
-
-  cd "$PLATFORM" || return
-  pnpm install
-  pnpm dev         
-}
-
 cbr() {
   if [ ! -f Cargo.toml ]; then
     echo "Currently not in a base cargo directory"
