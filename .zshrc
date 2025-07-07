@@ -116,7 +116,7 @@ initiate() {
   pnpx prisma db push
   pnpm db:gen
   pnpx prisma studio &
-  pnpm dev &         
+  pnpm cf:dev &         
   sleep 2           
 
   cd "$PLATFORM" || return
@@ -281,3 +281,4 @@ dnf() {
 export PATH="$PATH:$HOME/.dotnet/tools"
 
 . "$HOME/.local/bin/env"
+eval "$(zoxide init zsh)"
