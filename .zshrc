@@ -24,15 +24,7 @@ alias ssh-raspberrypi-home="ssh ivan@192.168.50.151"
 alias ssh-raspberrypi-hotspot="ssh ivan@172.20.10.2"
 alias enter-postgres="sudo -i -u postgres"
 
-export dsa_assignment="$HOME/programming/nyp/y2s1/data_structures_and_algorithms/assignment_1/"
-export dotfiles="$HOME/dotfiles/"
-export school="$HOME/programming/nyp/y2s1/"
-export ap_assignment="$HOME/programming/nyp/y2s1/advanced_programming/assignment_2/ASN2_Student_Resource/ASN2_Student_Resource/"
-export ip="$HOME/programming/nyp/y2s1/full_stack_dev/project/initiate-platform"
-export ib="$HOME/programming/nyp/y2s1/full_stack_dev/project/initiate-backend"
-export learning="$HOME/programming/personal/learning"
 export celeste_mods="$HOME/.var/app/com.valvesoftware.Steam/.local/share/Steam/steamapps/common/Celeste/Mods/test"
-export personal="$HOME/programming/personal"
 export zishrc="$HOME/dotfiles/.zshrc"
 
 # Start ssh-agent once per login
