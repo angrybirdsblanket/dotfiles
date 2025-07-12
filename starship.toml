@@ -1,0 +1,66 @@
+# ~/.config/starship.toml
+add_newline = false
+
+# Connected segments with chevron separators
+format = """
+$directory$git_branch$cmd_duration
+$character"""
+
+# Directory segment (red/pink with chevron)
+[directory]
+format = "[ $path ](bg:red fg:black)[](bg:yellow fg:red)"
+
+# Git branch segment (yellow with chevron)
+[git_branch]
+format = "[ $symbol$branch ](bg:yellow fg:black)[](bg:blue fg:yellow)"
+symbol = " "
+
+# Blue segment options (choose one):
+
+# OPTION 1: Command duration (currently active)
+[cmd_duration]
+format = "[ $duration ](bg:blue fg:white)[](fg:blue)"
+min_time = 1000
+show_milliseconds = false
+
+# OPTION 2: Current time
+# [time]
+# format = "[ $time ](bg:blue fg:white)[](fg:blue)"
+# time_format = "%H:%M"
+# disabled = false
+
+# OPTION 3: Exit code
+# [status]
+# format = "[ $symbol$status ](bg:blue fg:white)[](fg:blue)"
+# symbol = "✗ "
+# disabled = false
+
+# OPTION 4: Memory usage
+# [memory_usage]
+# format = "[ $ram ](bg:blue fg:white)[](fg:blue)"
+# disabled = false
+
+# OPTION 5: Battery level
+# [battery]
+# format = "[ $symbol$percentage ](bg:blue fg:white)[](fg:blue)"
+# disabled = false
+
+# OPTION 6: Package version
+# [package]
+# format = "[ $symbol$version ](bg:blue fg:white)[](fg:blue)"
+# symbol = "📦 "
+
+# OPTION 7: Simple exclamation
+# [custom.info]
+# format = "[ ! ](bg:blue fg:white)[](fg:blue)"
+# command = "echo '!'"
+# when = "true"
+
+# Prompt character
+[character]
+success_symbol = "[❯](bold green)"
+error_symbol = "[❯](bold red)"
+
+# Disable unused modules
+[git_status]
+disabled = true
