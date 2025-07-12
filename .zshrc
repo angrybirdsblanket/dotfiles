@@ -255,4 +255,7 @@ dnf() {
 export PATH="$PATH:$HOME/.dotnet/tools"
 
 . "$HOME/.local/bin/env"
+# Initialize packages
 eval "$(zoxide init zsh)"
+eval "$(starship init zsh)"
+
