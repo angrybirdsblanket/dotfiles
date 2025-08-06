@@ -250,7 +250,6 @@ dnf() {
   echo "Formatted files succellfully"
 }
 
-
 runpy() {
   if [[ -d src ]] then
     python src/main.py
@@ -261,10 +260,8 @@ runpy() {
 
 
 
-
 export PATH="$PATH:$HOME/.dotnet/tools"
 
-. "$HOME/.local/bin/env"
 # Initialize packages
 eval "$(zoxide init zsh)"
 eval "$(starship init zsh)"
