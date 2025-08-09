@@ -25,15 +25,15 @@ return {
           ['<C-Space>'] = cmp.mapping.complete(),
           ['<C-u>'] = cmp.mapping.scroll_docs(-4),
           ['<C-d>'] = cmp.mapping.scroll_docs(4),
-          ["<Tab>"] = cmp.mapping(function(fallback)
+          ["<C-n>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
               cmp.select_next_item()
             else
               fallback()
             end
           end, { "i", "s" }),
-          ["<CR>"] = cmp.mapping.confirm({ select = true }),
-          ["<S-Tab>"] = cmp.mapping(function(fallback)
+          ["<C-y>"] = cmp.mapping.confirm({ select = true }),
+          ["<C-p>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
               cmp.select_prev_item()
             else
