@@ -146,30 +146,78 @@ cgb() {
   echo "Successfully built project!"
 }
 
+# Clone a GitHub repo using SSH by default.
+# Accepts:
+#   owner/repo
+#   https://github.com/owner/repo(.git)
+#   git@github.com:owner/repo(.git)
+# Optional 2nd arg = target dir.
 clone() {
   if [[ -z "$1" ]]; then
-    echo "Usage: clone <github-https-url>"
+    echo "Usage: clone <owner/repo|github-url|ssh-url> [target-dir]"
     return 1
   fi
 
-  local url="$1"
+  local input="$1" target="${2:-}" repo_path ssh_url
 
-  # Check if it's a GitHub HTTPS URL
-  if [[ ! "$url" =~ ^https://github\.com/ ]]; then
-    echo "Error: Please provide a valid GitHub HTTPS URL"
-    return 1
+  # Normalize to owner/repo
+  if [[ "$input" =~ ^https?://github\.com/ ]]; then
+    repo_path="${input#*github.com/}"; repo_path="${repo_path%.git}"
+  elif [[ "$input" =~ ^git@github\.com: ]]; then
+    repo_path="${input#git@github.com:}"; repo_path="${repo_path%.git}"
+  else
+    repo_path="$input"
   fi
 
-  # Extract the user/repo part from the URL
-  local repo_path="${url#https://github.com/}"
-
-  # Remove .git suffix if present
-  repo_path="${repo_path%.git}"
-
-  # Construct and execute the SSH clone command
-  local ssh_url="git@github.com:${repo_path}.git"
+  ssh_url="git@github.com:${repo_path}.git"
   echo "Cloning: $ssh_url"
-  git clone "$ssh_url"
+
+  if command -v gh >/dev/null 2>&1; then
+    # gh is fine with full SSH URLs; this avoids HTTPS and any auto auth tweaks.
+    [[ -n "$target" ]] && gh repo clone "$ssh_url" "$target" || gh repo clone "$ssh_url"
+  else
+    [[ -n "$target" ]] && git clone "$ssh_url" "$target" || git clone "$ssh_url"
+  fi
+}
+
+# Link current repo to a GitHub remote over SSH and push current branch
+# WITHOUT setting upstream.
+link() {
+  if [[ -z "$1" ]]; then
+    echo "Usage: link <owner/repo|github-url|ssh-url>"
+    return 1
+  fi
+  if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    echo "Error: not inside a git repository"
+    return 1
+  fi
+
+  local input="$1" repo_path ssh_url
+
+  # Normalize to owner/repo
+  if [[ "$input" =~ ^https?://github\.com/ ]]; then
+    repo_path="${input#*github.com/}"; repo_path="${repo_path%.git}"
+  elif [[ "$input" =~ ^git@github\.com: ]]; then
+    repo_path="${input#git@github.com:}"; repo_path="${repo_path%.git}"
+  else
+    repo_path="$input"
+  fi
+
+  ssh_url="git@github.com:${repo_path}.git"
+
+  if git remote get-url origin >/dev/null 2>&1; then
+    echo "Updating remote origin → $ssh_url"
+    git remote set-url origin "$ssh_url"
+  else
+    echo "Adding remote origin → $ssh_url"
+    git remote add origin "$ssh_url"
+  fi
+
+  # Push current branch WITHOUT setting upstream (-u)
+  local branch
+  branch="$(git symbolic-ref --quiet --short HEAD || git rev-parse --short HEAD)"
+  echo "Pushing current branch '$branch' to origin (no upstream set)…"
+  git push origin "$branch"
 }
 
 format() {
@@ -200,31 +248,6 @@ format() {
   prettier --write "$file"
 }
 
-link() {
-  if [[ -z "$1" ]]; then
-    echo "Usage: gitlink <github-https-url>"
-    return 1
-  fi
-
-  local url="$1"
-
-  # Validate GitHub HTTPS URL
-  if [[ ! "$url" =~ ^https://github\.com/ ]]; then
-    echo "Error: Please provide a valid GitHub HTTPS URL"
-    return 1
-  fi
-
-  # Transform to SSH format
-  local repo_path="${url#https://github.com/}"
-  repo_path="${repo_path%.git}"
-  local ssh_url="git@github.com:${repo_path}.git"
-
-  echo "Adding remote origin: $ssh_url"
-  git remote add origin "$ssh_url"
-
-  push main
-}
-
 dnf() {
   if [[ -z "$1" ]]; then
     # No argument, use current directory
@@ -251,13 +274,30 @@ dnf() {
 }
 
 runpy() {
-  if [[ -d src ]] then
-    python src/main.py
-  else
-    python main.py
+  local dir="."
+  if [[ -n "$1" ]]; then
+    dir="$1"
   fi
-}
 
+  if [[ ! -d "$dir" ]]; then
+    echo "Unable to find directory: '$dir'" >&2
+    return 1
+  fi
+
+  pushd "$dir" > /dev/null || return 1
+
+  if [[ -f src/main.py ]]; then
+    python src/main.py "${@:2}"
+  elif [[ -f main.py ]]; then
+    python main.py "${@:2}"
+  else
+    echo "No main.py found in '$dir' or '$dir/src'." >&2
+    popd > /dev/null
+    return 1
+  fi
+
+  popd > /dev/null
+}
 
 
 export PATH="$PATH:$HOME/.dotnet/tools"
