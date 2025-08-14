@@ -184,41 +184,25 @@ clone() {
 # WITHOUT setting upstream.
 link() {
   if [[ -z "$1" ]]; then
-    echo "Usage: link <owner/repo|github-url|ssh-url>"
-    return 1
-  fi
-  if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-    echo "Error: not inside a git repository"
+    echo "Usage: link <repo-name>"
     return 1
   fi
 
-  local input="$1" repo_path ssh_url
+  local repo_name="$1"
+  local current_dir=$(pwd)  # Save the current working directory
 
-  # Normalize to owner/repo
-  if [[ "$input" =~ ^https?://github\.com/ ]]; then
-    repo_path="${input#*github.com/}"; repo_path="${repo_path%.git}"
-  elif [[ "$input" =~ ^git@github\.com: ]]; then
-    repo_path="${input#git@github.com:}"; repo_path="${repo_path%.git}"
-  else
-    repo_path="$input"
-  fi
+  gh repo create "angrybirdsblanket/$repo_name" --private --clone
 
-  ssh_url="git@github.com:${repo_path}.git"
+  # Go into the newly cloned repository directory
+  cd "$repo_name" || return 1
 
-  if git remote get-url origin >/dev/null 2>&1; then
-    echo "Updating remote origin → $ssh_url"
-    git remote set-url origin "$ssh_url"
-  else
-    echo "Adding remote origin → $ssh_url"
-    git remote add origin "$ssh_url"
-  fi
+  # Set the remote origin to the newly created GitHub repository
+  git remote set-url origin "git@github.com:angrybirdsblanket/$repo_name.git"
 
-  # Push current branch WITHOUT setting upstream (-u)
-  local branch
-  branch="$(git symbolic-ref --quiet --short HEAD || git rev-parse --short HEAD)"
-  echo "Pushing current branch '$branch' to origin (no upstream set)…"
-  git push origin "$branch"
+  # Push the existing commits from the original directory to the new GitHub repository
+  git push --all origin  # Push all branches to the new repo
 }
+
 
 format() {
   # check if currently inside a ts project
